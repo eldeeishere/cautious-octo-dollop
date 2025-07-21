@@ -1,0 +1,34 @@
+-- +goose Up
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    CREATED_AT TIMESTAMP NOT NULL DEFAULT NOW(),
+    UPDATED_AT TIMESTAMP NOT NULL DEFAULT NOW(),
+    email TEXT NOT NULL UNIQUE,
+    hashed_password TEXT NOT NULL DEFAULT 'NOT_SET',
+    is_chirpy_red BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE messages (
+    id UUID PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    body TEXT NOT NULL,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE refresh_tokens (
+    token TEXT PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMP NOT NULL,
+    revoked_at TIMESTAMP NULL
+);
+
+
+
+-- +goose Down
+DROP TABLE refresh_tokens;
+DROP TABLE messages;
+DROP TABLE users;
